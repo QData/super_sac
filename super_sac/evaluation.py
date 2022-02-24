@@ -1,9 +1,19 @@
 import gym
 import numpy as np
 import torch
+import gin
 
 
-def run_env(agent, env, episodes, max_steps, render=False, verbosity=1, num_envs=1):
+def run_env(
+    agent,
+    env,
+    episodes,
+    max_steps,
+    render=False,
+    verbosity=1,
+    num_envs=1,
+    sample_actions=False,
+):
     episode_return_history = []
     if render:
         env.render("rgb_array")
@@ -14,7 +24,10 @@ def run_env(agent, env, episodes, max_steps, render=False, verbosity=1, num_envs
         for _ in range(max_steps):
             if still_counts.sum() == 0:
                 break
-            action = agent.forward(state, num_envs=num_envs)
+            if not sample_actions:
+                action = agent.forward(state, num_envs=num_envs)
+            else:
+                action = agent.sample_action(state, num_envs=num_envs)
             state, reward, done, _ = env.step(action)
             if render:
                 env.render("rgb_array")
@@ -30,6 +43,7 @@ def exploration_noise(action, random_process):
     return np.clip(action + random_process.sample(), -1.0, 1.0)
 
 
+@gin.configurable
 def evaluate_agent(
     agent,
     env,
@@ -38,6 +52,7 @@ def evaluate_agent(
     render=False,
     verbosity=0,
     num_envs=1,
+    sample_actions=False,
 ):
     agent.eval()
     returns = run_env(
@@ -48,6 +63,7 @@ def evaluate_agent(
         render=render,
         verbosity=verbosity,
         num_envs=num_envs,
+        sample_actions=sample_actions,
     )
     agent.train()
     mean_return = returns.mean()

@@ -28,6 +28,8 @@ main.super_sac.use_afbc_update_online = False
 main.super_sac.afbc_per = True
 main.super_sac.reuse_replay_dicts = False
 
+# DR3 regularization
+main.super_sac.dr3_coeff = 0.01
 main.super_sac.critic_updates_per_step = 1
 main.super_sac.target_critic_ensemble_n = 2
 main.super_sac.batch_size = 512
@@ -75,5 +77,5 @@ main.super_sac.aug_mix = 0
 main.super_sac.log_to_disk = True
 main.super_sac.log_interval = 1000
 main.super_sac.save_to_disk = True
-main.super_sac.save_interval = 10_000
+main.super_sac.save_best = True
 main.super_sac.verbosity = 1
